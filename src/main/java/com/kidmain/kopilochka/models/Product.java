@@ -57,6 +57,14 @@ public class Product {
         this.username = username;
     }
 
+    // Hibernate constructor
+    public Product(String name, Double price, LocalDate date, String username) {
+        this.name = name;
+        this.price = price;
+        this.date = date;
+        this.username = username;
+    }
+
     public Long getId() {
         return id;
     }
