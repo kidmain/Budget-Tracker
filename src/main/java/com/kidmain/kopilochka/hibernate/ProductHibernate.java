@@ -17,7 +17,9 @@ public class ProductHibernate {
 
     public static void main(String[] args) {
         ProductHibernate hibernate = new ProductHibernate();
-        hibernate.addRandomProducts();
+//        hibernate.addRandomProducts();
+//        hibernate.editProductName(2L, "John");
+        hibernate.deleteProduct(2L);
     }
 
     private Product getProductById(Long id) {
@@ -34,23 +36,23 @@ public class ProductHibernate {
         }
     }
 
-    public void addRandomProducts() {
+    private void addRandomProducts() {
         ProductHibernate hibernate = new ProductHibernate();
         SessionFactory sessionFactory = configuration.buildSessionFactory();
+        Session session = sessionFactory.getCurrentSession();
 
         List<Product> products = new ArrayList<>();
         for (int i = 0; i < 15; i++) {
             products.add(
                     new Product(
-                    hibernate.createRandomWord((int) (Math.random()*50) + 1),
-                    Math.random()*10000,
-                    LocalDate.of((int) (Math.random()*2022), (int) (Math.random()*11 + 1), (int) (Math.random()*27 + 1)),
-                    "Anna")
+                            hibernate.createRandomWord((int) (Math.random() * 50) + 1),
+                            Math.random() * 10000,
+                            LocalDate.of((int) (Math.random() * 2022), (int) (Math.random() * 11 + 1), (int) (Math.random() * 27 + 1)),
+                            "Anna")
             );
         }
 
-        try(sessionFactory) {
-            Session session = sessionFactory.getCurrentSession();
+        try {
             session.beginTransaction();
 
             for (Product product : products) {
@@ -58,6 +60,9 @@ public class ProductHibernate {
             }
 
             session.getTransaction().commit();
+        } finally {
+            session.close();
+            sessionFactory.close();
         }
     }
 
@@ -69,5 +74,39 @@ public class ProductHibernate {
             word.append(c);
         }
         return word.toString();
+    }
+
+    private void editProductName(Long id, String name) {
+        SessionFactory sessionFactory = configuration.buildSessionFactory();
+        Session session = sessionFactory.getCurrentSession();
+
+        try {
+            session.beginTransaction();
+
+            Product product = session.get(Product.class, id);
+            product.setName(name);
+
+            session.getTransaction().commit();
+        } finally {
+            session.close();
+            sessionFactory.close();
+        }
+    }
+
+    private void deleteProduct(Long id) {
+        SessionFactory sessionFactory = configuration.buildSessionFactory();
+        Session session = sessionFactory.getCurrentSession();
+
+        try {
+            session.beginTransaction();
+
+            Product product = session.get(Product.class, id);
+            session.delete(product);
+
+            session.getTransaction().commit();
+        } finally {
+            session.close();
+            sessionFactory.close();
+        }
     }
 }
