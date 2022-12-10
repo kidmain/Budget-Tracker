@@ -52,4 +52,8 @@ public class ProductServiceTemplate {
     public void deleteProductById(Long id) {
         jdbcTemplate.update("DELETE FROM kopilochka.products WHERE id=?", id);
     }
+
+    public void deleteAllProducts() {
+        jdbcTemplate.update("DELETE FROM kopilochka.products");
+    }
 }
