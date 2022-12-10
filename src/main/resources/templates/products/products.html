@@ -64,7 +64,16 @@
         <input id="date" type="date" th:field="*{date}" class="form-control">
         <p th:if="${#fields.hasErrors('date')}" th:errors="*{date}" style="color: red">Error</p>
     </div>
-    <button type="submit" class="btn btn-primary btn-lg">Add</button>
+    <button type="submit" class="btn btn-primary btn-lg" style="width: 250px">Add</button>
 </form>
+
+<br>
+
+<form th:action="@{/products}" th:method="DELETE">
+    <button type="submit" class="btn btn-outline-danger btn-lg" style="width: 250px">Delete</button>
+</form>
+
+<br>
+
 </body>
 </html>
