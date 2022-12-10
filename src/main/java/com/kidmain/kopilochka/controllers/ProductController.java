@@ -1,9 +1,7 @@
 package com.kidmain.kopilochka.controllers;
 
 import com.kidmain.kopilochka.models.Product;
-import com.kidmain.kopilochka.services.ProductService;
 import com.kidmain.kopilochka.services.ProductServiceTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -55,6 +53,12 @@ public class ProductController {
     @DeleteMapping("/{id}/delete")
     public String deleteProduct(@PathVariable("id") Long id) {
         productService.deleteProductById(id);
+        return "redirect:/products";
+    }
+
+    @DeleteMapping
+    public String deleteAllProducts() {
+        productService.deleteAllProducts();
         return "redirect:/products";
     }
 
