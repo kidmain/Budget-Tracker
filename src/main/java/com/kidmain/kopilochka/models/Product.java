@@ -18,13 +18,11 @@ import java.util.Objects;
 @Entity
 @Table(name = "products")
 public class Product {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_id_seq")
-//    @SequenceGenerator(
-//            name = "product_id_seq", sequenceName = "product_id_seq",
-//            allocationSize = 1, initialValue = 1)
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_id_seq")
+    @SequenceGenerator(
+            name = "product_id_seq", sequenceName = "product_id_seq",
+            allocationSize = 1, initialValue = 1)
     @Column
     private Long id;
 
