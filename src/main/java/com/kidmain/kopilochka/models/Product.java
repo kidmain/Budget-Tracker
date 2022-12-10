@@ -9,35 +9,41 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
 @Table(name = "products")
 public class Product {
-
-    static final String PRODUCT_ID_SEQ = "product_id_seq";
-
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_id_seq")
+//    @SequenceGenerator(
+//            name = "product_id_seq", sequenceName = "product_id_seq",
+//            allocationSize = 1, initialValue = 1)
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = PRODUCT_ID_SEQ)
-    @SequenceGenerator(
-            name = PRODUCT_ID_SEQ, sequenceName = PRODUCT_ID_SEQ,
-            allocationSize = 1, initialValue = 1
-    )
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Long id;
 
     @Column
+    @NotEmpty(message = "It should not be empty")
     private String name;
 
     @Column
+    @PositiveOrZero(message = "It should not be negative")
+    @NotNull(message = "It should not be empty")
     private Double price;
 
     @Column
+    @NotNull(message = "It should not be empty")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
     @Column
+    @NotEmpty(message = "It should not be empty")
     private String username;
 
     public Product() {
