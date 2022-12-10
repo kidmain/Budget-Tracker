@@ -7,22 +7,26 @@
           integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 </head>
 <body style="max-width: 992px; margin: 0 auto">
-<form th:action="@{/products/{id}/edit(id=${product.id})}" th:method="PUT" th:object="${product}" class="mx-auto">
+<form th:action="@{/products/{id}/edit(id=${product.id})}" th:method="PATCH" th:object="${product}" class="mx-auto">
     <div class="mb-3">
         <label for="name">Name: </label>
         <input id="name" type="text" th:field="*{name}" class="form-control">
+        <p th:if="${#fields.hasErrors('name')}" th:errors="*{name}" style="color: red">Error</p>
     </div>
     <div class="mb-3">
         <label for="price">Price: </label>
         <input id="price" type="text" th:field="*{price}" class="form-control">
+        <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}" style="color: red">Error</p>
     </div>
     <div class="mb-3">
-        <label for="someuser">User: </label>
-        <input id="someuser" type="text" th:field="*{someuser}" class="form-control">
+        <label for="username">User: </label>
+        <input id="username" type="text" th:field="*{username}" class="form-control">
+        <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color: red">Error</p>
     </div>
     <div class="mb-3">
         <label for="date">Date: </label>
         <input id="date" type="date" th:field="*{date}" class="form-control">
+        <p th:if="${#fields.hasErrors('date')}" th:errors="*{date}" style="color: red">Error</p>
     </div>
     <button type="submit" class="btn btn-primary btn-lg">Update</button>
 </form>
