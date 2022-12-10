@@ -12,15 +12,15 @@
         <th>Id</th>
         <th>Name</th>
         <th>Price</th>
-        <th>Date</th>
         <th>User</th>
+        <th>Date</th>
     </tr>
     <tr th:each="product : ${product}">
         <td th:text="${product.id}">Id</td>
         <td th:text="${product.name}">Name</td>
         <td th:text="${product.price}">Price</td>
+        <td th:text="${product.username}">Username</td>
         <td th:text="${product.date}">Date</td>
-        <td th:text="${product.someuser}">Date</td>
     </tr>
 </table>
 </body>
