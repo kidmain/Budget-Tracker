@@ -26,15 +26,6 @@ public class ProductController {
         this.userService = userService;
     }
 
-    @GetMapping
-    public String getAllProducts(Model model) {
-        model.addAttribute("product", new Product());
-        model.addAttribute("products", productService.getAllProductsByOrder());
-        model.addAttribute("user", new AppUser());
-        model.addAttribute("users", userService.getAllUsers());
-        return "products/products";
-    }
-
     @GetMapping("/{id}")
     public String getProductById(@PathVariable("id") Long id, Model model) {
         model.addAttribute("product", productService.getProductById(id));
@@ -45,19 +36,19 @@ public class ProductController {
     public String addProduct(Product product, AppUser user) {
         product.setUser(user);
         productService.addProduct(product);
-        return "redirect:/products";
+        return "redirect:/";
     }
 
     @DeleteMapping("/{id}/delete")
     public String deleteProduct(@PathVariable("id") Long id) {
         productService.deleteProductById(id);
-        return "redirect:/products";
+        return "redirect:/";
     }
 
     @DeleteMapping
     public String deleteAllProducts() {
         productService.deleteAllProducts();
-        return "redirect:/products";
+        return "redirect:/";
     }
 
     @GetMapping("/{id}/edit")
@@ -65,16 +56,12 @@ public class ProductController {
         model.addAttribute("product", productService.getProductById(id));
         model.addAttribute("products", productService.getAllProducts());
         model.addAttribute("user", productService.getProductById(id).getUser());
-        model.addAttribute("users", userService.getAllUsers());
-        return "products/products-edit";
+        model.addAttribute("users", userService.getAllUsersByOrder());
+        return "products/edit";
     }
 
     @PatchMapping("/{id}/edit")
     public String editProduct(@PathVariable("id") Long id, Product product, AppUser user) {
-//        if(bindingResult.hasErrors()) {
-//            return "products/products-edit";
-//        }
-
         Product updatedProduct = productService.getProductById(id);
 
         if (product.getName() != null) updatedProduct.setName(product.getName());
@@ -83,6 +70,6 @@ public class ProductController {
         updatedProduct.setUser(user);
 
         productService.updateProduct(updatedProduct);
-        return "redirect:/products";
+        return "redirect:/";
     }
 }
