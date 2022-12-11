@@ -36,7 +36,7 @@ public class Product {
     @Column
     @NotNull(message = "It should not be empty")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private LocalDate date;
+    private LocalDate date = LocalDate.now();
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
