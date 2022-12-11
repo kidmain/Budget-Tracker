@@ -7,7 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -19,10 +20,7 @@ import java.util.Objects;
 @Table(name = "products")
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "product_id_seq")
-    @SequenceGenerator(
-            name = "product_id_seq", sequenceName = "product_id_seq",
-            allocationSize = 1, initialValue = 1)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Long id;
 
@@ -40,27 +38,27 @@ public class Product {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
-    @Column
-    @NotEmpty(message = "It should not be empty")
-    private String username;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private AppUser user;
 
     public Product() {
     }
 
-    public Product(Long id, String name, Double price, LocalDate date, String username) {
+    public Product(Long id, String name, Double price, LocalDate date, AppUser user) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.date = date;
-        this.username = username;
+        this.user = user;
     }
 
     // Hibernate constructor
-    public Product(String name, Double price, LocalDate date, String username) {
+    public Product(String name, Double price, LocalDate date, AppUser user) {
         this.name = name;
         this.price = price;
         this.date = date;
-        this.username = username;
+        this.user = user;
     }
 
     public Long getId() {
@@ -95,12 +93,12 @@ public class Product {
         this.date = date;
     }
 
-    public String getUsername() {
-        return username;
+    public AppUser getUser() {
+        return user;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUser(AppUser user) {
+        this.user = user;
     }
 
     @Override
@@ -108,15 +106,12 @@ public class Product {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return id.equals(product.id) && name.equals(product.name)
-                && price.equals(product.price)
-                && date.equals(product.date)
-                && username.equals(product.username);
+        return Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(price, product.price) && Objects.equals(date, product.date) && Objects.equals(user, product.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, price, date, username);
+        return Objects.hash(id, name, price, date, user);
     }
 
     @Override
@@ -126,7 +121,7 @@ public class Product {
                 ", name='" + name + '\'' +
                 ", price=" + price +
                 ", date=" + date +
-                ", username='" + username + '\'' +
+                ", user=" + user +
                 '}';
     }
 }
