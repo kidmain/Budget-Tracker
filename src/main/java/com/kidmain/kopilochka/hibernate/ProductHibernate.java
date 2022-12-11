@@ -7,6 +7,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,13 +20,13 @@ import java.util.List;
 
 @Service
 public class ProductHibernate {
+    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
     // hibernate.properties
     private static final Configuration configuration = new Configuration()
             .addAnnotatedClass(Product.class)
             .addAnnotatedClass(AppUser.class);
 
     public static void main(String[] args) {
-//        addProduct();
         addRandomProducts();
 //        editProductName(1L, "UPDATED");
 //        deleteProduct(2L);
@@ -46,29 +47,6 @@ public class ProductHibernate {
         }
     }
 
-    private static void addProduct() {
-        SessionFactory sessionFactory = configuration.buildSessionFactory();
-        Session session = sessionFactory.getCurrentSession();
-
-        try (sessionFactory) {
-            session = sessionFactory.getCurrentSession();
-            session.beginTransaction();
-
-            AppUser user = session.get(AppUser.class, 1L);
-            Product product = new Product(
-                    createRandomWord((int) (Math.random() * 50) + 1),
-                    Math.random() * 10000,
-                    LocalDate.of((int) (Math.random() * 2022), (int) (Math.random() * 11 + 1), (int) (Math.random() * 27 + 1)),
-                    user);
-            // It's not mandatory to add a product for the user.
-            // Hibernate may display an old version of the user due to caching.
-            user.getProducts().add(product);
-
-            session.save(product);
-            session.getTransaction().commit();
-        }
-    }
-
     private static void addRandomProducts() {
         SessionFactory sessionFactory = configuration.buildSessionFactory();
         Session session = sessionFactory.getCurrentSession();
@@ -76,23 +54,13 @@ public class ProductHibernate {
         try {
             session.beginTransaction();
 
-            AppUser user = null;
-            List<Product> products = new ArrayList<>();
             for (int i = 0; i < 15; i++) {
-                user = session.get(AppUser.class, (long) (Math.random() * 2) + 1);
-                products.add(
-                        new Product(
-                                createRandomWord((int) (Math.random() * 50) + 1),
-                                Double.parseDouble(String.format("%.2f", (Math.random() * 10000 + 1))),
+                AppUser user = session.get(AppUser.class, (long) (Math.random() * 2) + 1);
+                Product product = new Product(createRandomWord((int) (Math.random() * 50) + 1),
+                                Double.parseDouble(DECIMAL_FORMAT.format((Math.random() * 10000) + 1)),
                                 LocalDate.of((int) (Math.random() * 2022), (int) (Math.random() * 12 + 1), (int) (Math.random() * 28 + 1)),
-                                user)
-                );
-            }
-
-            for (Product product : products) {
-                // It's not mandatory to add a product for the user.
-                // Hibernate may display an old version of the user due to caching.
-                user.getProducts().add(product);
+                                user);
+                user.setExpenses(user.getExpenses() + Double.parseDouble(DECIMAL_FORMAT.format(product.getPrice())));
                 session.save(product);
             }
 
