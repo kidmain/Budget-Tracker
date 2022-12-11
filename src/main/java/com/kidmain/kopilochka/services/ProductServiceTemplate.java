@@ -1,7 +1,7 @@
 //package com.kidmain.kopilochka.services;
 //
+//import com.kidmain.kopilochka.models.AppUser;
 //import com.kidmain.kopilochka.models.Product;
-//import com.kidmain.kopilochka.utils.ProductRowMapper;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.jdbc.core.BeanPropertyRowMapper;
 //import org.springframework.jdbc.core.JdbcTemplate;
@@ -23,13 +23,18 @@
 //    }
 //
 //    public List<Product> getAllProductsByOrder() {
-//        return jdbcTemplate.query("SELECT * FROM kopilochka.products ORDER BY id", new BeanPropertyRowMapper<>(Product.class));
+//        return jdbcTemplate.query(
+//                "SELECT * FROM kopilochka.products p JOIN kopilochka.app_user a ON p.user_id = a.id",
+//                new BeanPropertyRowMapper<>(Product.class));
 //    }
 //
 //    public Product getProductById(Long id) {
 //        List<Product> query = jdbcTemplate.query(
-//                "SELECT * FROM kopilochka.products WHERE id=?",
+//                "SELECT kopilochka.products.id, kopilochka.app_user.id FROM kopilochka.app_user " +
+//                        "join kopilochka.products on kopilochka.products.user_id = app_user.id " +
+//                        "WHERE kopilochka.products.id=?",
 //                new BeanPropertyRowMapper<>(Product.class),
+//                new Object[]{Product.class, AppUser.class},
 //                id
 //        );
 //
