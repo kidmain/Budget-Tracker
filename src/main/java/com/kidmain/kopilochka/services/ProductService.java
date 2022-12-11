@@ -1,5 +1,6 @@
 package com.kidmain.kopilochka.services;
 
+import com.kidmain.kopilochka.models.AppUser;
 import com.kidmain.kopilochka.models.Product;
 import com.kidmain.kopilochka.repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,12 @@ import java.util.List;
 @Service
 public class ProductService {
     private final ProductRepository productRepository;
+    private final UserService userService;
 
     @Autowired
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, UserService service) {
         this.productRepository = productRepository;
+        this.userService = service;
     }
 
     public List<Product> getAllProducts() {
@@ -25,15 +28,26 @@ public class ProductService {
         return products;
     }
 
+    public Product getProductById(Long id) {
+        return productRepository.findById(id).orElse(null);
+    }
+
     public List<Product> getAllProductsByOrder() {
         return productRepository.findByOrderById();
     }
 
     public void addProduct(Product product) {
+        userService.updateUser(updateUserBudget(product, true));
+        productRepository.save(product);
+    }
+
+    public void updateProduct(Product product) {
         productRepository.save(product);
     }
 
     public void deleteProductById(Long id) {
+        Product product = getProductById(id);
+        userService.updateUser(updateUserBudget(product, false));
         productRepository.deleteById(id);
     }
 
@@ -41,11 +55,13 @@ public class ProductService {
         productRepository.deleteAll();
     }
 
-    public Product getProductById(Long id) {
-        return productRepository.findById(id).orElse(null);
-    }
-
-    public void updateProduct(Product product) {
-        productRepository.save(product);
+    private AppUser updateUserBudget(Product product, boolean isExpense) {
+        AppUser user = userService.getUserById(product.getUser().getId());
+        if (isExpense) {
+            user.setExpenses(user.getExpenses() + product.getPrice());
+        } else {
+            user.setExpenses(user.getExpenses() - product.getPrice());
+        }
+        return user;
     }
 }
