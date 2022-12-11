@@ -60,6 +60,9 @@ public class ProductHibernate {
                     Math.random() * 10000,
                     LocalDate.of((int) (Math.random() * 2022), (int) (Math.random() * 11 + 1), (int) (Math.random() * 27 + 1)),
                     user);
+            // It's not mandatory to add a product for the user.
+            // Hibernate may display an old version of the user due to caching.
+            user.getProducts().add(product);
 
             session.save(product);
             session.getTransaction().commit();
@@ -73,18 +76,23 @@ public class ProductHibernate {
         try {
             session.beginTransaction();
 
+            AppUser user = null;
             List<Product> products = new ArrayList<>();
             for (int i = 0; i < 15; i++) {
+                user = session.get(AppUser.class, (long) (Math.random() * 2) + 1);
                 products.add(
                         new Product(
                                 createRandomWord((int) (Math.random() * 50) + 1),
                                 Double.parseDouble(String.format("%.2f", (Math.random() * 10000 + 1))),
                                 LocalDate.of((int) (Math.random() * 2022), (int) (Math.random() * 12 + 1), (int) (Math.random() * 28 + 1)),
-                                session.get(AppUser.class, (long) (Math.random() * 2) + 1))
+                                user)
                 );
             }
 
             for (Product product : products) {
+                // It's not mandatory to add a product for the user.
+                // Hibernate may display an old version of the user due to caching.
+                user.getProducts().add(product);
                 session.save(product);
             }
 
