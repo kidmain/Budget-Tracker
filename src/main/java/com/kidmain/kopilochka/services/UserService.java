@@ -4,7 +4,6 @@ import com.kidmain.kopilochka.models.AppUser;
 import com.kidmain.kopilochka.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -15,15 +14,15 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<AppUser> getAllUsers() {
-        List<AppUser> users = new ArrayList<>();
-        userRepository
-                .findAll()
-                .forEach(users::add);
-        return users;
+    public List<AppUser> getAllUsersByOrder() {
+        return userRepository.findByOrderById();
     }
 
-    public AppUser getAppUserById(Long id) {
+    public AppUser getUserById(Long id) {
         return userRepository.findById(id).orElse(null);
+    }
+
+    public void updateUser(AppUser updatedUser) {
+        userRepository.save(updatedUser);
     }
 }
