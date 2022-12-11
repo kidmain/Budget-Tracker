@@ -19,9 +19,11 @@
         <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}" style="color: red">Error</p>
     </div>
     <div class="mb-3">
-        <label for="username">User: </label>
-        <input id="username" type="text" th:field="*{username}" class="form-control">
-        <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}" style="color: red">Error</p>
+        <label for="user">User: </label>
+        <select id="user" th:object="${user}" th:field="*{id}"
+                class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+            <option th:value="${user.id}" th:text="${user.name}" th:each="user: ${users}">User</option>
+        </select>
     </div>
     <div class="mb-3">
         <label for="date">Date: </label>
