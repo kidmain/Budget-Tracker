@@ -1,6 +1,7 @@
 package com.kidmain.kopilochka.services;
 
 import com.kidmain.kopilochka.models.AppUser;
+import com.kidmain.kopilochka.models.Product;
 import com.kidmain.kopilochka.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,8 @@ public class UserService {
         return userRepository.findById(id).orElse(null);
     }
 
-    public void updateUser(AppUser updatedUser) {
-        userRepository.save(updatedUser);
+    public void updateUser(AppUser user) {
+        user = userRepository.findById(user.getId()).orElse(null);
+        userRepository.save(user);
     }
 }

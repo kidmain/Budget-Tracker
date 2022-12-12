@@ -44,8 +44,19 @@ public class ProductService {
         productRepository.save(product);
     }
 
-    public void updateProduct(Product product) {
-        productRepository.save(product);
+    public void updateProduct(
+            Product oldProduct, Product updatedProduct,
+            AppUser user, AppUser updatedUser
+    ) {
+        double updatedUserExpenses = editUserExpenses(oldProduct, updatedProduct, updatedUser);
+        updatedUser.setExpenses(updatedUserExpenses);
+
+        if (oldProduct.getName() != null) updatedProduct.setName(oldProduct.getName());
+        if (oldProduct.getPrice() != null) updatedProduct.setPrice(oldProduct.getPrice());
+        if (oldProduct.getDate() != null) updatedProduct.setDate(oldProduct.getDate());
+        updatedProduct.setUser(user);
+        productRepository.save(updatedProduct);
+        userService.updateUser(updatedUser);
     }
 
     public void deleteProductById(Long id) {
@@ -61,6 +72,10 @@ public class ProductService {
         productRepository.deleteAll();
     }
 
+    public List<Product> getAllProductsByUserId(Long id) {
+        return productRepository.findByUserId(id);
+    }
+
 
     private AppUser updateUserBudget(Product product, boolean isExpense) {
         AppUser user = userService.getUserById(product.getUser().getId());
@@ -72,6 +87,15 @@ public class ProductService {
             user.setExpenses(getFormattedDouble(userExpense - productPrice));
         }
         return user;
+    }
+
+    private double editUserExpenses(Product oldProduct, Product updatedProduct, AppUser user) {
+        boolean isExpense = oldProduct.getPrice() > updatedProduct.getPrice();
+        if (isExpense) {
+            return oldProduct.getPrice() - updatedProduct.getPrice() + user.getExpenses();
+        } else {
+            return user.getExpenses() - (updatedProduct.getPrice() - oldProduct.getPrice());
+        }
     }
 
     private double getFormattedDouble(Double number) {
