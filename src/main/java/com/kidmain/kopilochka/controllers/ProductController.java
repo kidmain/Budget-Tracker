@@ -7,12 +7,15 @@ import com.kidmain.kopilochka.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/products")
@@ -33,7 +36,16 @@ public class ProductController {
     }
 
     @PostMapping
-    public String addProduct(Product product, AppUser user) {
+    public String addProduct(@Valid Product product, BindingResult productBindingResult,
+                             @Valid AppUser user, BindingResult userBindingResult,
+                             Model model) {
+        model.addAttribute("user", user);
+        model.addAttribute("users", userService.getAllUsersByOrder());
+
+        if (productBindingResult.hasErrors() || userBindingResult.hasErrors()) {
+            return "index";
+        }
+
         product.setUser(user);
         productService.addProduct(product);
         return "redirect:/";
@@ -61,15 +73,10 @@ public class ProductController {
     }
 
     @PatchMapping("/{id}/edit")
-    public String editProduct(@PathVariable("id") Long id, Product product, AppUser user) {
+    public String editProduct(@PathVariable("id") Long id, Product oldProduct, AppUser oldUser) {
         Product updatedProduct = productService.getProductById(id);
-
-        if (product.getName() != null) updatedProduct.setName(product.getName());
-        if (product.getPrice() != null) updatedProduct.setPrice(product.getPrice());
-        if (product.getDate() != null) updatedProduct.setDate(product.getDate());
-        updatedProduct.setUser(user);
-
-        productService.updateProduct(updatedProduct);
+        AppUser updatedUser = userService.getUserById(updatedProduct.getUser().getId());
+        productService.updateProduct(oldProduct, updatedProduct, oldUser, updatedUser);
         return "redirect:/";
     }
 }
