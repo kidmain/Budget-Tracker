@@ -11,7 +11,7 @@
 <body style="max-width: 992px; margin: 0 auto">
 <form th:action="@{/users/{id}/edit(id=${user.id})}" th:method="PATCH" th:object="${user}" class="mx-auto">
     <div class="mb-3">
-        <a th:href="@{/products}" style="text-decoration: none; color: white">
+        <a th:href="@{../../}" style="text-decoration: none; color: white">
             <h2 th:text="${user.name}"></h2>
         </a>
     </div>
