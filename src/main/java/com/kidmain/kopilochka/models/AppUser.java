@@ -1,8 +1,5 @@
 package com.kidmain.kopilochka.models;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -112,6 +109,12 @@ public class AppUser {
 
     @Override
     public String toString() {
-        return this.name;
+        return "AppUser{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", income=" + income +
+                ", expenses=" + expenses +
+                ", debt=" + debt +
+                '}';
     }
 }
