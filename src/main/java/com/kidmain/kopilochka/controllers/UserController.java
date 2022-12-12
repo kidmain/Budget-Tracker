@@ -16,15 +16,21 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/users")
 public class UserController {
     private final UserService userService;
+    private final ProductService productService;
 
     @Autowired
-    public UserController(UserService userService ) {
+    public UserController(UserService userService, ProductService productService) {
         this.userService = userService;
+        this.productService = productService;
     }
 
     @GetMapping("/{id}")
-    public String getUserById(@PathVariable("id") Long id, Model model) {
+    public String getUserById(
+            @PathVariable("id") Long id, Model model
+
+    ) {
         model.addAttribute("user", userService.getUserById(id));
+        model.addAttribute("products", productService.getAllProductsByUserId(id));
         return "users/user";
     }
 

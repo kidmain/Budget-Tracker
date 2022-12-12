@@ -53,7 +53,6 @@ public class ProductHibernate {
 
         try {
             session.beginTransaction();
-
             for (int i = 0; i < 15; i++) {
                 AppUser user = session.get(AppUser.class, (long) (Math.random() * 2) + 1);
                 Product product = new Product(createRandomWord((int) (Math.random() * 50) + 1),
@@ -63,7 +62,6 @@ public class ProductHibernate {
                 user.setExpenses(user.getExpenses() + Double.parseDouble(DECIMAL_FORMAT.format(product.getPrice())));
                 session.save(product);
             }
-
             session.getTransaction().commit();
         } finally {
             session.close();

@@ -34,5 +34,36 @@
         </td>
     </tr>
 </table>
+
+<hr>
+
+<table class="table table-striped align-middle caption-top">
+    <caption>Products</caption>
+    <tr th:if="${!#lists.isEmpty(products)}">
+        <td>Name</td>
+        <td>Price</td>
+        <td>User</td>
+        <td>Date</td>
+        <td colspan="3">Options</td>
+    </tr>
+    <tr th:each="product : ${products}">
+        <td th:text="${product.name}">Name</td>
+        <td th:text="${product.price}">Price</td>
+        <td th:text="${product.user.name}">User</td>
+        <td th:text="${product.date}">Date</td>
+        <td>
+            <a th:href="@{/products/{id}(id=${product.id})}" style="text-decoration: none">ℹ️</a>
+        </td>
+        <td>
+            <a th:href="@{/products/{id}/edit(id=${product.id})}" style="text-decoration: none">📝</a>
+        </td>
+        <td>
+            <form th:action="@{/products/{id}/delete(id=${product.id})}" th:method="DELETE">
+                <button id="delete" type="submit" class="btn btn-sm">🗑</button>
+            </form>
+        </td>
+    </tr>
+</table>
+
 </body>
 </html>
