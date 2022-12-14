@@ -10,6 +10,7 @@ spring:
       hibernate:
         default_schema: kopilochka
         dialect: org.hibernate.dialect.PostgreSQL9Dialect
+    show-sql: false
   datasource:
     driver-class-name: org.postgresql.Driver
     username: postgres
