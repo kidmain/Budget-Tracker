@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
 public class IndexController {
-    private final boolean IS_JDBC = true;
     private final ProductService productService;
     private final UserService userService;
+//    private final ProductHibernate productHibernate;
 
     @Autowired
     public IndexController(ProductService productService, UserService userService) {
@@ -24,9 +24,9 @@ public class IndexController {
     @GetMapping
     public String getAllProducts(Model model) {
         model.addAttribute("product", new Product());
-        model.addAttribute("products", productService.getAllProductsByOrder(IS_JDBC));
+        model.addAttribute("products", productService.getAllProductsByOrder());
         model.addAttribute("user", new AppUser());
-        model.addAttribute("users", userService.getAllUsersByOrder(IS_JDBC));
+        model.addAttribute("users", userService.getAllUsersByOrder());
         return "index";
     }
 }

@@ -20,9 +20,9 @@ import javax.validation.Valid;
 @Controller
 @RequestMapping("/products")
 public class ProductController {
-    private final boolean IS_JDBC = true;
     private final ProductService productService;
     private final UserService userService;
+//    private final ProductHibernate productHibernate;
 
     @Autowired
     public ProductController(ProductService productService, UserService userService) {
@@ -32,7 +32,7 @@ public class ProductController {
 
     @GetMapping("/{id}")
     public String getProductById(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("product", productService.getProductById(id, IS_JDBC));
+        model.addAttribute("product", productService.getProductById(id));
         return "products/product";
     }
 
@@ -41,43 +41,44 @@ public class ProductController {
                              @Valid AppUser user, BindingResult userBindingResult,
                              Model model) {
         model.addAttribute("user", user);
-        model.addAttribute("users", userService.getAllUsersByOrder(IS_JDBC));
+        model.addAttribute("users", userService.getAllUsersByOrder());
 
         if (productBindingResult.hasErrors() || userBindingResult.hasErrors()) {
             return "index";
         }
 
         product.setUser(user);
-        productService.addProduct(product, IS_JDBC);
+
+        productService.addProduct(product);
         return "redirect:/";
     }
 
     @DeleteMapping("/{id}/delete")
     public String deleteProduct(@PathVariable("id") Long id) {
-        productService.deleteProductById(id, IS_JDBC);
+        productService.deleteProductById(id);
         return "redirect:/";
     }
 
     @DeleteMapping
     public String deleteAllProducts() {
-        productService.deleteAllProducts(IS_JDBC);
+        productService.deleteAllProducts();
         return "redirect:/";
     }
 
     @GetMapping("/{id}/edit")
     public String getEditProductById(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("product", productService.getProductById(id, IS_JDBC));
-        model.addAttribute("products", productService.getAllProducts(IS_JDBC));
-        model.addAttribute("user", productService.getProductById(id, IS_JDBC).getUser());
-        model.addAttribute("users", userService.getAllUsersByOrder(IS_JDBC));
+        model.addAttribute("product", productService.getProductById(id));
+        model.addAttribute("products", productService.getAllProducts());
+        model.addAttribute("user", productService.getProductById(id).getUser());
+        model.addAttribute("users", userService.getAllUsersByOrder());
         return "products/edit";
     }
 
     @PatchMapping("/{id}/edit")
     public String editProduct(@PathVariable("id") Long id, Product oldProduct, AppUser oldUser) {
-        Product updatedProduct = productService.getProductById(id, IS_JDBC);
-        AppUser updatedUser = userService.getUserById(updatedProduct.getUser().getId(), IS_JDBC);
-        productService.updateProduct(oldProduct, updatedProduct, oldUser, updatedUser, IS_JDBC);
+        Product updatedProduct = productService.getProductById(id);
+        AppUser updatedUser = userService.getUserById(updatedProduct.getUser().getId());
+        productService.updateProduct(oldProduct, updatedProduct, oldUser, updatedUser);
         return "redirect:/";
     }
 }
