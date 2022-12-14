@@ -3,7 +3,7 @@ package com.kidmain.kopilochka.services;
 import com.kidmain.kopilochka.exceptions.UserNotFoundException;
 import com.kidmain.kopilochka.models.AppUser;
 import com.kidmain.kopilochka.repositories.UserRepository;
-import com.kidmain.kopilochka.utils.UserRowMapper;
+import com.kidmain.kopilochka.utils.AppUserRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +22,7 @@ public class UserService {
     public List<AppUser> getAllUsersByOrder(boolean isJDBC) {
         if (isJDBC) {
             return jdbcTemplate.query("SELECT * FROM kopilochka.app_user ORDER BY id",
-                    new UserRowMapper()
+                    new AppUserRowMapper()
             );
         } else {
             return userRepository.findByOrderById();
@@ -32,7 +32,7 @@ public class UserService {
     public AppUser getUserById(Long id, boolean isJDBC) {
         if (isJDBC) {
             List<AppUser> query = jdbcTemplate.query("SELECT * FROM kopilochka.app_user WHERE id=?",
-                    new UserRowMapper(),
+                    new AppUserRowMapper(),
                     id
             );
 
