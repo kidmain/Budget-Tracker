@@ -17,7 +17,6 @@ public class AppUserRowMapper implements RowMapper<AppUser> {
         Double expenses = rs.getDouble("expenses");
         Double debt = rs.getDouble("debt");
 
-
         user.setId(id);
         user.setName(name);
         user.setIncome(income);
