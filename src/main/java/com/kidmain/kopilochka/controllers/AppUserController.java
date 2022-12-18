@@ -1,9 +1,11 @@
 package com.kidmain.kopilochka.controllers;
 
+import com.kidmain.kopilochka.dao.Hibernate.AppUserServiceHibernate;
+import com.kidmain.kopilochka.dao.JDBC.AppUserServiceJDBC;
 import com.kidmain.kopilochka.models.AppUser;
 import com.kidmain.kopilochka.models.Product;
 import com.kidmain.kopilochka.services.ProductService;
-import com.kidmain.kopilochka.services.UserService;
+import com.kidmain.kopilochka.services.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,14 +16,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/users")
-public class UserController {
-    private final UserService userService;
+public class AppUserController {
+    private final AppUserService appUserService;
     private final ProductService productService;
+    private final AppUserServiceHibernate userHibernate;
+    private final AppUserServiceJDBC userJDBC;
 
     @Autowired
-    public UserController(UserService userService, ProductService productService) {
-        this.userService = userService;
+    public AppUserController(AppUserService appUserService, ProductService productService, AppUserServiceHibernate userHibernate, AppUserServiceJDBC userJDBC) {
+        this.appUserService = appUserService;
         this.productService = productService;
+        this.userHibernate = userHibernate;
+        this.userJDBC = userJDBC;
     }
 
     @GetMapping("/{id}")
@@ -29,26 +35,26 @@ public class UserController {
             @PathVariable("id") Long id, Model model
 
     ) {
-        model.addAttribute("user", userService.getUserById(id));
+        model.addAttribute("user", appUserService.getUserById(id));
         model.addAttribute("products", productService.getAllProductsByUserId(id));
         return "users/user";
     }
 
     @GetMapping("/{id}/edit")
     public String getEditUser(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("user", userService.getUserById(id));
+        model.addAttribute("user", appUserService.getUserById(id));
         return "users/edit";
     }
     
     @PatchMapping("/{id}/edit")
     public String editUser(@PathVariable("id") Long id, AppUser user, Product product) {
-        AppUser updatedUser = userService.getUserById(id);
+        AppUser updatedUser = appUserService.getUserById(id);
 
         if(user.getIncome() != null) updatedUser.setIncome(user.getIncome());
         if(user.getExpenses() != null) updatedUser.setExpenses(user.getExpenses());
         if(user.getDebt() != null) updatedUser.setDebt(user.getDebt());
 
-        userService.updateUser(updatedUser);
+        appUserService.updateUser(updatedUser);
         return "redirect:/";
     }
 }

@@ -1,7 +1,6 @@
 package com.kidmain.kopilochka.configs;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -10,8 +9,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
-import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -29,9 +26,6 @@ import java.util.Properties;
 @EnableTransactionManagement
 public class KopilochkaConfig {
 
-    /**
-     * JDBC Template
-     */
     private final Environment environment;
 
     @Autowired
@@ -50,19 +44,18 @@ public class KopilochkaConfig {
         return dataSource;
     }
 
-//    @Bean
-//    public JdbcTemplate jdbcTemplate() {
-//        return new JdbcTemplate(dataSource());
-//    }
+
+    @Bean
+    public JdbcTemplate jdbcTemplate() {
+        return new JdbcTemplate(dataSource());
+    }
 
 
-    /**
-     * Hibernate
-     */
     private Properties hibernateProperties() {
         Properties properties = new Properties();
         properties.put("dialect", environment.getRequiredProperty("hibernate.dialect"));
         properties.put("show_sql", environment.getRequiredProperty("hibernate.show_sql"));
+        properties.put("hbm2ddl.auto", environment.getRequiredProperty("hibernate.hbm2ddl.auto"));
 
         return properties;
     }
@@ -89,24 +82,24 @@ public class KopilochkaConfig {
     ///////////////////////////////////////////
     ///// SPRING HIBERNATE CONFIGURATION /////
     /////////////////////////////////////////
-//    @Bean
-//    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-//        final LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
-//        entityManagerFactory.setDataSource(dataSource());
-//        entityManagerFactory.setPackagesToScan("com.kidmain.kopilochka.models");
-//
-//        final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-//        entityManagerFactory.setJpaVendorAdapter(vendorAdapter);
-//        entityManagerFactory.setJpaProperties(hibernateProperties());
-//
-//        return entityManagerFactory;
-//    }
-//
-//    @Bean
-//    public PlatformTransactionManager transactionManager() {
-//        JpaTransactionManager transactionManager = new JpaTransactionManager();
-//        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
-//
-//        return transactionManager;
-//    }
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        final LocalContainerEntityManagerFactoryBean entityManagerFactory = new LocalContainerEntityManagerFactoryBean();
+        entityManagerFactory.setDataSource(dataSource());
+        entityManagerFactory.setPackagesToScan("com.kidmain.kopilochka.models");
+
+        final HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        entityManagerFactory.setJpaVendorAdapter(vendorAdapter);
+        entityManagerFactory.setJpaProperties(hibernateProperties());
+
+        return entityManagerFactory;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager() {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
+
+        return transactionManager;
+    }
 }

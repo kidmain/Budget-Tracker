@@ -2,6 +2,7 @@ package com.kidmain.kopilochka;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 
 /**
  * /// ERROR ///
@@ -10,7 +11,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * (exclude = HibernateJpaAutoConfiguration.class)
  */
 
-@SpringBootApplication
+@SpringBootApplication(
+        scanBasePackages = "com.kidmain.kopilochka",
+        exclude = HibernateJpaAutoConfiguration.class
+)
 public class KopilochkaApplication {
     public static void main(String[] args) {
         SpringApplication.run(KopilochkaApplication.class, args);
