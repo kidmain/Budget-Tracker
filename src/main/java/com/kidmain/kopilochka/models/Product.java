@@ -2,18 +2,12 @@ package com.kidmain.kopilochka.models;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.PositiveOrZero;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -35,8 +29,17 @@ public class Product {
 
     @Column
     @NotNull(message = "It should not be empty")
+//    @Temporal(TemporalType.DATE)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date = LocalDate.now();
+
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt = new Date();
+
+    @Column
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modifiedAt;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -54,7 +57,7 @@ public class Product {
     }
 
     // Hibernate constructor
-    public Product(String name, Double price, LocalDate date, AppUser user) {
+    public Product(String name, Double price, LocalDate Date, AppUser user) {
         this.name = name;
         this.price = price;
         this.date = date;
@@ -101,17 +104,33 @@ public class Product {
         this.user = user;
     }
 
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getModifiedAt() {
+        return modifiedAt;
+    }
+
+    public void setModifiedAt(Date modifiedAt) {
+        this.modifiedAt = modifiedAt;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Product product = (Product) o;
-        return Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(price, product.price) && Objects.equals(date, product.date) && Objects.equals(user, product.user);
+        return Objects.equals(id, product.id) && Objects.equals(name, product.name) && Objects.equals(price, product.price) && Objects.equals(date, product.date) && Objects.equals(createdAt, product.createdAt) && Objects.equals(modifiedAt, product.modifiedAt) && Objects.equals(user, product.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, price, date, user);
+        return Objects.hash(id, name, price, date, createdAt, modifiedAt, user);
     }
 
     @Override
