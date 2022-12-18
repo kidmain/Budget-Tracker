@@ -1,23 +1,19 @@
 package com.kidmain.kopilochka.services;
 
-import com.kidmain.kopilochka.exceptions.UserNotFoundException;
+import com.kidmain.kopilochka.exceptions.AppUserNotFoundException;
 import com.kidmain.kopilochka.models.AppUser;
-import com.kidmain.kopilochka.models.Product;
-import com.kidmain.kopilochka.repositories.UserRepository;
+import com.kidmain.kopilochka.repositories.AppUserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.DecimalFormat;
 import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
-public class UserService {
-    private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
+public class AppUserService {
+    private final AppUserRepository userRepository;
 
-    private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
+    public AppUserService(AppUserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -29,7 +25,7 @@ public class UserService {
         return userRepository
                 .findById(id)
                 .orElseThrow(() -> {
-                            throw new UserNotFoundException("User with this id not found");
+                            throw new AppUserNotFoundException("User with this id not found");
                         }
                 );
     }
@@ -39,7 +35,7 @@ public class UserService {
         user = userRepository
                 .findById(user.getId())
                 .orElseThrow(() -> {
-                            throw new UserNotFoundException("User with this id not found");
+                            throw new AppUserNotFoundException("User with this id not found");
                         }
                 );
         userRepository.save(user);
