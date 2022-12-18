@@ -1,9 +1,11 @@
 package com.kidmain.kopilochka.controllers;
 
+import com.kidmain.kopilochka.dao.Hibernate.ProductServiceHibernate;
+import com.kidmain.kopilochka.dao.JDBC.ProductServiceJDBC;
 import com.kidmain.kopilochka.models.AppUser;
 import com.kidmain.kopilochka.models.Product;
 import com.kidmain.kopilochka.services.ProductService;
-import com.kidmain.kopilochka.services.UserService;
+import com.kidmain.kopilochka.services.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,13 +23,16 @@ import javax.validation.Valid;
 @RequestMapping("/products")
 public class ProductController {
     private final ProductService productService;
-    private final UserService userService;
-//    private final ProductHibernate productHibernate;
+    private final AppUserService appUserService;
+    private final ProductServiceHibernate productHibernate;
+    private final ProductServiceJDBC productJDBC;
 
     @Autowired
-    public ProductController(ProductService productService, UserService userService) {
+    public ProductController(ProductService productService, AppUserService appUserService, ProductServiceHibernate productHibernate, ProductServiceJDBC productJDBC) {
         this.productService = productService;
-        this.userService = userService;
+        this.appUserService = appUserService;
+        this.productHibernate = productHibernate;
+        this.productJDBC = productJDBC;
     }
 
     @GetMapping("/{id}")
@@ -41,7 +46,7 @@ public class ProductController {
                              @Valid AppUser user, BindingResult userBindingResult,
                              Model model) {
         model.addAttribute("user", user);
-        model.addAttribute("users", userService.getAllUsersByOrder());
+        model.addAttribute("users", appUserService.getAllUsersByOrder());
 
         if (productBindingResult.hasErrors() || userBindingResult.hasErrors()) {
             return "index";
@@ -70,15 +75,13 @@ public class ProductController {
         model.addAttribute("product", productService.getProductById(id));
         model.addAttribute("products", productService.getAllProducts());
         model.addAttribute("user", productService.getProductById(id).getUser());
-        model.addAttribute("users", userService.getAllUsersByOrder());
+        model.addAttribute("users", appUserService.getAllUsersByOrder());
         return "products/edit";
     }
 
     @PatchMapping("/{id}/edit")
-    public String editProduct(@PathVariable("id") Long id, Product oldProduct, AppUser oldUser) {
-        Product updatedProduct = productService.getProductById(id);
-        AppUser updatedUser = userService.getUserById(updatedProduct.getUser().getId());
-        productService.updateProduct(oldProduct, updatedProduct, oldUser, updatedUser);
+    public String editProduct(@PathVariable("id") Long id, Product product, AppUser user) {
+        productService.updateProduct(id, product, user);
         return "redirect:/";
     }
 }

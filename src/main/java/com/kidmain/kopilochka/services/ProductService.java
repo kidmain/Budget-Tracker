@@ -1,7 +1,7 @@
 package com.kidmain.kopilochka.services;
 
 import com.kidmain.kopilochka.exceptions.ProductNotFoundException;
-import com.kidmain.kopilochka.exceptions.UserNotFoundException;
+import com.kidmain.kopilochka.exceptions.AppUserNotFoundException;
 import com.kidmain.kopilochka.models.AppUser;
 import com.kidmain.kopilochka.models.Product;
 import com.kidmain.kopilochka.repositories.ProductRepository;
@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -18,12 +19,12 @@ import java.util.List;
 public class ProductService {
     private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("0.00");
     private final ProductRepository productRepository;
-    private final UserService userService;
+    private final AppUserService userService;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, UserService service) {
+    public ProductService(ProductRepository productRepository, AppUserService userService) {
         this.productRepository = productRepository;
-        this.userService = service;
+        this.userService = userService;
     }
 
     public Product getProductById(Long id) {
@@ -51,7 +52,7 @@ public class ProductService {
         return productRepository
                 .findByUserId(id)
                 .orElseThrow(() -> {
-                            throw new UserNotFoundException("User with this id not found");
+                            throw new AppUserNotFoundException("User with this id not found");
                         }
                 );
     }
@@ -59,26 +60,40 @@ public class ProductService {
     @Transactional
     public void addProduct(Product product) {
         product.setPrice(product.getPrice());
-        userService.updateUser(updateUserBudget(product, true));
+        product.setCreatedAt(new Date());
+
         productRepository.save(product);
+        userService.updateUser(updateUserBudget(product, true));
     }
 
     @Transactional
     public void updateProduct(
-            Product oldProduct, Product updatedProduct,
-            AppUser user, AppUser updatedUser
-            
+            Long id,
+            Product updatedProduct,
+            AppUser updatedUser
     ) {
-        double updatedUserExpenses = editUserExpenses(oldProduct, updatedProduct, updatedUser);
-        updatedUser.setExpenses(updatedUserExpenses);
+        Product oldProduct = getProductById(id);
+        AppUser oldUser = userService.getUserById(oldProduct.getUser().getId());
+        updatedUser = userService.getUserById(updatedUser.getId());
 
-        if (oldProduct.getName() != null) updatedProduct.setName(oldProduct.getName());
-        if (oldProduct.getPrice() != null) updatedProduct.setPrice(oldProduct.getPrice());
-        if (oldProduct.getDate() != null) updatedProduct.setDate(oldProduct.getDate());
-        updatedProduct.setUser(user);
+        if (!oldUser.equals(updatedUser)) {
+            oldUser.setExpenses(oldUser.getExpenses() - oldProduct.getPrice());
+            updatedUser.setExpenses(updatedUser.getExpenses() + updatedProduct.getPrice());
+            userService.updateUser(oldUser);
+            userService.updateUser(updatedUser);
+        } else {
+            double updatedUserExpenses = editUserExpenses(updatedProduct, oldProduct, oldUser);
+            updatedUser.setExpenses(updatedUserExpenses);
+            userService.updateUser(updatedUser);
+        }
 
-        productRepository.save(updatedProduct);
-        userService.updateUser(updatedUser);
+        oldProduct.setName(updatedProduct.getName());
+        oldProduct.setPrice(updatedProduct.getPrice());
+        oldProduct.setDate(updatedProduct.getDate());
+        oldProduct.setUser(updatedUser);
+
+        oldProduct.setModifiedAt(new Date());
+        productRepository.save(oldProduct);
     }
 
     @Transactional
